@@ -1,13 +1,16 @@
 from builder.models import Email, EmailTime
 from parser.models import LogSegment
 
-from utils import ISO_8601_REGEX,timestamp_to_iso8601
+from utils import ISO_8601_REGEX,timestamp_to_iso8601,read_file
 
 import re
+import os
 import logging
+import argparse
 from datetime import datetime,timezone
+from pprint import pprint as pp
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("lethalworm")
 
 class Parser:
     """This is a pseudo log message parser class"""
@@ -223,18 +226,43 @@ class Builder:
         
         return messages
 
-# if __name__ == "__main__":
-
-#     c = Parser()
-#     b = Builder()
-
-#     with open(r"C:\Users\LukasPetravicius\Documents\Github\lethal_worm\lethalworm\mockdata.txt") as data_mock:
-#         mock_data = data_mock.readlines()
-    
 
 
-#     # log_message = "2021-05-01T00:00:07.319452 A87246FB7082775D status=rejected"
+class App:
+    def __init__(self):
+        self._parser = Parser()
+        self._builder = Builder()
 
-#     log_segments = c.parse(mock_data)
-#     email = b.build_message(log_segments)
-#     print(email)
+    def run(self,log_filename:str):
+        if os.path.exists(log_filename):
+            data_to_parse = read_file(log_filename)
+
+            segment_buffer = self._parser.parse(log_messages=data_to_parse)
+
+            parsed_messages = self._builder.build_message(log_buffer=segment_buffer)
+
+            for message in parsed_messages:
+                pp(message.json())
+
+        else:
+            log.error(f"{datetime.now()} Error: {log_filename} does not exist!")
+            exit()
+
+
+class LethalWormCLI:
+    @classmethod
+    def run(cls):
+        parser = argparse.ArgumentParser(prog="LethalWorm",description='Parse log files to JSON format')
+        parser.add_argument('file', metavar='file', type=str, nargs='+',
+                    help='path to a log file to parse')
+        args = parser.parse_args()
+        
+        if len(args.file) == 0:
+            log.error(f"{datetime.now()} Error: No log files")
+        else:
+            app = App()
+
+            try:
+                app.run(log_filename=args.file)
+            except Exception as ex:
+                log.error(f"{datetime.now()} Error: {ex}")
