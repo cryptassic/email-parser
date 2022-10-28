@@ -1,14 +1,13 @@
-from builder.models import Email, EmailTime
-from parser.models import LogSegment
-
-from utils import ISO_8601_REGEX,timestamp_to_iso8601,read_file
+from lethalworm.builder.models import Email, EmailTime
+from lethalworm.parser.models import LogSegment
+from lethalworm.utils import ISO_8601_REGEX,timestamp_to_iso8601,read_file
 
 import re
 import os
 import logging
 import argparse
-from datetime import datetime,timezone
 from pprint import pprint as pp
+from datetime import datetime,timezone
 
 log = logging.getLogger("lethalworm")
 
@@ -263,6 +262,8 @@ class LethalWormCLI:
             app = App()
 
             try:
-                app.run(log_filename=args.file)
+                
+                app.run(log_filename=args.file[0])
+
             except Exception as ex:
                 log.error(f"{datetime.now()} Error: {ex}")
