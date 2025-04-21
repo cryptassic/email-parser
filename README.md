@@ -1,9 +1,9 @@
-# Lethal Worm
+# DEMO Email Parser
 ## _Custom Log parser for log analysis system_
 
 [![N|Python3](https://www.python.org/static/community_logos/python-powered-w-70x28.png)](https://www.python.org/)
 
-Lethal Worm is a custom build, efficient, pseudo email log parser.
+Email Parser is a custom build for one of cybesecurity analysit job interview. It is a efficient, pseudo email log parser.
 
 ## Features
 
